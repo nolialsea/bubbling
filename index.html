@@ -1,0 +1,183 @@
+<body id="body">
+	<h3 style="text-align: center">Drop an image</h3>
+	<canvas id="canvas_up" width=1 height=1 style="border: 1px solid black; margin: auto; display: block;"></canvas>
+	<canvas id="canvas_down" width=1 height=1 style="border: 1px solid black; margin: auto; display: block;"></canvas>
+	
+	<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+</body>
+
+<script>
+	$(function() {
+	    
+	    var radius = 80;
+	    var body = document.getElementById("body");
+		var mousePressed = false;
+		var canvasUp = document.getElementById("canvas_up");
+		var canvasDown = document.getElementById("canvas_down");
+		var ctxDown = canvasDown.getContext("2d");
+		var ctxUp = canvasUp.getContext("2d");
+		var circle = [];
+		var circleTemp = getCircleObject();
+		var img = false;
+		
+		canvas_up.oncontextmenu = function() {
+			return false;  
+		}
+		
+		function getCircleObject (){
+			return {
+				x1: 0,
+				x2: 0,
+				y1: 0,
+				y2: 0
+			}
+		}
+		
+		function loadImage(src){
+			//	Prevent any non-image file type from being read.
+			if(!src.type.match(/image.*/)){
+				console.log("The dropped file is not an image: ", src.type);
+				return;
+			}
+
+			//	Create our FileReader and run the results through the render function.
+			var reader = new FileReader();
+			reader.onload = function(e){
+				//render(e.target.result);
+				getImage(e.target.result);
+			};
+			reader.readAsDataURL(src);
+		}
+
+		body.addEventListener("dragover", function(e){e.preventDefault();}, true);
+		body.addEventListener("drop", function(e){
+			e.preventDefault(); 
+			loadImage(e.dataTransfer.files[0]);
+		}, true);
+		
+		function getMousePos(e){
+			var r = canvasUp.getBoundingClientRect(),
+				r2 = canvasDown.getBoundingClientRect(),
+				x = e.clientX - r.left,
+				y = e.clientY - r.top,
+				x2 = e.clientX - r2.left,
+				y2 = e.clientY - r2.top;
+			return {x:x, y:y, x2:x2, y2:y2};
+		}
+	    
+	    function drawCircle (ctx, x, y, radius){
+	    	ctx.beginPath();
+			ctx.moveTo(x + radius, y);
+			ctx.arc(x, y, radius, 0, 2*Math.PI);
+			ctx.fill();
+	    }
+		
+		function drawCircleAtMousePos(e){
+			var pos = getMousePos(e);
+			var rDown = canvasDown.getBoundingClientRect()
+			drawCircle(ctxUp, pos.x, pos.y, radius);
+			drawCircle(ctxDown, pos.x, pos.y, radius);
+		}
+		
+		canvasUp.onmousedown = function(e) {
+			if (e.button == 0){
+				var pos = getMousePos(e);
+				circleTemp.x1 = pos.x;
+				circleTemp.y1 = pos.y;
+				circleTemp.x2 = pos.x;
+				circleTemp.y2 = pos.y;
+				//drawCircleAtMousePos(e);
+			}else if(event.button == 2){
+			
+			}
+			mousePressed = true;
+		};
+
+		body.onmouseup = function(e) {
+			if (mousePressed){
+				if (e.button == 0){
+					mousePressed = false;
+					console.log(circleTemp);
+					circle.push(circleTemp);
+					circleTemp = getCircleObject();
+					console.log(circle);
+				}else if(event.button == 2){
+					e.preventDefault();
+					circle.pop();
+				}
+				drawImage(img);
+				drawAllCircles();
+			}
+			mousePressed = false;
+		};
+		
+		// for demo only, reveals image while mousing over canvas
+		canvasUp.onmousemove = function(e) {
+			if (e.button == 0){
+				if (mousePressed){
+					var pos = getMousePos(e);
+					circleTemp.x2 = pos.x;
+					circleTemp.y2 = pos.y;
+					if (img){
+						drawImage(img);
+						drawCircleTemp();
+						drawAllCircles();
+					}
+				}
+			}else if(event.button == 2){
+			
+			}
+		};
+		
+		function drawImage(img){
+			ctxUp.drawImage(img, 0,0,img.width, img.height);
+			ctxDown.drawImage(img, 0,0,img.width, img.height);
+			ctxUp.fillStyle = "rgba(255,255,255,0.60)";
+			ctxDown.fillStyle = "rgba(255,255,255,1)";
+			ctxUp.fillRect(0,0,canvasUp.width, canvasUp.height);
+			ctxDown.fillRect(0,0,canvasUp.width, canvasUp.height);
+			
+			// set image as pattern for fillStyle
+			ctxUp.fillStyle = ctxUp.createPattern(img, "no-repeat");	
+			ctxDown.fillStyle = ctxUp.createPattern(img, "no-repeat");	
+		}
+		
+		function drawCircleTemp(){
+			var x = circleTemp.x1 + (circleTemp.x2 - circleTemp.x1)/2;
+			var y = circleTemp.y1 + (circleTemp.y2 - circleTemp.y1)/2;
+			var distance = Math.sqrt((Math.pow(circleTemp.x2 - circleTemp.x1, 2) + Math.pow(circleTemp.y2 - circleTemp.y1, 2)))/2;
+			drawCircle(ctxDown, x, y, distance);
+			drawCircle(ctxUp, x, y, distance);
+		}
+		
+		function drawAllCircles(){
+			for (var i=0; i<circle.length; i++){
+				var x = circle[i].x1 + (circle[i].x2 - circle[i].x1)/2;
+				var y = circle[i].y1 + (circle[i].y2 - circle[i].y1)/2;
+				var distance = Math.sqrt((Math.pow(circle[i].x2 - circle[i].x1, 2) + Math.pow(circle[i].y2 - circle[i].y1, 2)))/2;
+				drawCircle(ctxDown, x, y, distance);
+				drawCircle(ctxUp, x, y, distance);
+			}
+		}
+	    
+	    var getImage = function (src){
+	        
+	        img = new Image;
+	        
+	        img.onload = setup;
+            img.src = src;
+            //img.crossOrigin = "anonymous"
+			
+
+	        function setup() {
+				canvasUp.width = img.width;
+				canvasUp.height = img.height;
+				canvasDown.width = canvasUp.width;
+				canvasDown.height = canvasUp.height;
+				
+				drawImage(img);
+	        }
+	    }
+   	
+	});
+</script>
