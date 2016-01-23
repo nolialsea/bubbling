@@ -97,12 +97,9 @@
 			if (mousePressed){
 				if (e.button == 0){
 					mousePressed = false;
-					console.log(circleTemp);
 					circle.push(circleTemp);
 					circleTemp = getCircleObject();
-					console.log(circle);
 				}else if(event.button == 2){
-					e.preventDefault();
 					circle.pop();
 				}
 				drawImage(img);
@@ -132,7 +129,7 @@
 		function drawImage(img){
 			ctxUp.drawImage(img, 0,0,img.width, img.height);
 			ctxDown.drawImage(img, 0,0,img.width, img.height);
-			ctxUp.fillStyle = "rgba(0,0,0,0.6)";
+			ctxUp.fillStyle = "rgba(0,0,0,0.5)";
 			ctxDown.fillStyle = "rgba(0,0,0,1)";
 			ctxUp.fillRect(0,0,canvasUp.width, canvasUp.height);
 			ctxDown.fillRect(0,0,canvasUp.width, canvasUp.height);
