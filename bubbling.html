@@ -126,6 +126,14 @@
 			}
 		};
 		
+		$( "#body" ).keypress(function( event ) {
+			if ( event.which == 114 ) {
+				circle.pop();
+				drawImage(img);
+				drawAllCircles();
+			}
+		});
+		
 		function drawImage(img){
 			ctxUp.drawImage(img, 0,0,img.width, img.height);
 			ctxDown.drawImage(img, 0,0,img.width, img.height);
