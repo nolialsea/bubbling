@@ -1,5 +1,6 @@
 <body id="body">
 	<h3 style="text-align: center">Drop an image</h3>
+	<input id="color" value="rgb(0,0,0)" style="text-align: center; margin: auto"/>
 	<canvas id="canvas_up" width=1 height=1 style="border: 1px solid black; margin: auto; display: block;"></canvas>
 	<canvas id="canvas_down" width=1 height=1 style="border: 1px solid black; margin: auto; display: block;"></canvas>
 	
@@ -11,6 +12,7 @@
 	    
 	    var radius = 80;
 	    var body = document.getElementById("body");
+		var color = document.getElementById("color");
 		var mousePressed = false;
 		var canvasUp = document.getElementById("canvas_up");
 		var canvasDown = document.getElementById("canvas_down");
@@ -100,7 +102,7 @@
 					circle.push(circleTemp);
 					circleTemp = getCircleObject();
 				}else if(event.button == 2){
-					circle.pop();
+					//circle.pop();
 				}
 				drawImage(img);
 				drawAllCircles();
@@ -138,7 +140,7 @@
 			ctxUp.drawImage(img, 0,0,img.width, img.height);
 			ctxDown.drawImage(img, 0,0,img.width, img.height);
 			ctxUp.fillStyle = "rgba(0,0,0,0.5)";
-			ctxDown.fillStyle = "rgba(0,0,0,1)";
+			ctxDown.fillStyle = color.value;
 			ctxUp.fillRect(0,0,canvasUp.width, canvasUp.height);
 			ctxDown.fillRect(0,0,canvasUp.width, canvasUp.height);
 			
