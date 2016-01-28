@@ -1,8 +1,8 @@
 <body id="body">
 	<h3 style="text-align: center">Drop an image</h3>
 	<input id="color" value="rgb(0,0,0)" style="text-align: center; margin: auto"/>
-	<canvas id="canvas_up" width=1 height=1 style="border: 1px solid black; margin: auto; display: block;"></canvas>
-	<canvas id="canvas_down" width=1 height=1 style="border: 1px solid black; margin: auto; display: block;"></canvas>
+	<canvas id="canvas_up" width=200 height=200 style="border: 1px solid black; margin: auto; display: block;"></canvas>
+	<canvas id="canvas_down" width=200 height=200 style="border: 1px solid black; margin: auto; display: block;"></canvas>
 	
 	<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 </body>
@@ -56,6 +56,7 @@
 			e.preventDefault(); 
 			loadImage(e.dataTransfer.files[0]);
 		}, true);
+		body.ondrop()
 		
 		function getMousePos(e){
 			var r = canvasUp.getBoundingClientRect(),
